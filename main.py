@@ -2,10 +2,8 @@ import requests
 import time
 import json
 
-TOKEN_URL = 'https://oauth.vk.com/blank.html#access_token=' \
-            '5794f313f436101f5eefdf8d152c8f0c62a7adb8e4b8a3dcb16040585d1ece4755a1d68e0061d914006a1' \
-            '&expires_in=0&user_id=289384'
-ACCESS_TOKEN = '5794f313f436101f5eefdf8d152c8f0c62a7adb8e4b8a3dcb16040585d1ece4755a1d68e0061d914006a1'
+TOKEN_URL = 'your_url'
+ACCESS_TOKEN = 'your_token'
 VERSION = '5.52'
 
 
@@ -59,6 +57,3 @@ save_json(list_of_groups)
 
 print(list_of_groups)
 
-
-
-'https://vk.com/326374'
