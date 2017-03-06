@@ -2,10 +2,8 @@ import requests
 import json
 from tqdm import tqdm
 
-TOKEN_URL = 'https://oauth.vk.com/blank.html#access_token=' \
-            '5794f313f436101f5eefdf8d152c8f0c62a7adb8e4b8a3dcb16040585d1ece4755a1d68e0061d914006a1' \
-            '&expires_in=0&user_id=289384'
-ACCESS_TOKEN = '5794f313f436101f5eefdf8d152c8f0c62a7adb8e4b8a3dcb16040585d1ece4755a1d68e0061d914006a1'
+TOKEN_URL = ''
+ACCESS_TOKEN = ''
 VERSION = '5.52'
 
 
@@ -82,7 +80,7 @@ def save_json(data):
 
 def make_list_of_top_n_groups(groups, n):
     list_of_dicts = [{'title': x[1], 'id': x[0], 'count': groups.count(x)} for x in tqdm(set(groups))]
-    list_of_dicts = sorted(list_of_dicts, key=lambda x: x['count'], reverse=False)
+    list_of_dicts = sorted(list_of_dicts, key=lambda x: x['count'], reverse=True)
     return list_of_dicts[:n]
 
 
