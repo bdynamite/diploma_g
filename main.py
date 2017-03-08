@@ -73,6 +73,13 @@ def get_groups(users, dict_params):
     return all_groups
 
 
+class Group:
+
+    def __init__(self, group_data):
+        self.id = group_data['id']
+        self.screen_name = group_data['screen_name']
+
+
 def save_json(data):
     with open('groups.json', 'w') as file:
         json.dump(data, file)
@@ -91,6 +98,9 @@ followers = get_users(params.copy(), 'users.getFollowers')
 followers.extend(get_users(params.copy(), 'friends.get'))
 
 list_of_groups = get_groups(followers, params.copy())
+
+list_of_groups = [(x.id, x.screen_name) for x in list_of_groups]
+
 list_of_groups = make_list_of_top_n_groups(list_of_groups, 10)
 save_json(list_of_groups)
 
