@@ -44,6 +44,20 @@ def get_via_execute(dict_params, method, number):
     return users
 
 
+class Celebrity:
+
+
+    def __init__(self, id):
+        self.id = id
+
+    def get_top_n_subscribers_groups(self, n):
+        params = dict(access_token=ACCESS_TOKEN, v=VERSION, user_id=self.id)
+        followers = get_users(params.copy(), 'users.getFollowers')
+        followers.extend(get_users(params.copy(), 'friends.get'))
+        list_of_groups = get_groups(followers, params.copy())
+        return make_list_of_top_n_groups(list_of_groups, n)
+
+
 def get_groups(users, dict_params):
     all_groups = []
     users = list(map(int, users))
@@ -73,13 +87,6 @@ def get_groups(users, dict_params):
     return all_groups
 
 
-class Group:
-
-    def __init__(self, group_data):
-        self.id = group_data['id']
-        self.screen_name = group_data['screen_name']
-
-
 def save_json(data):
     with open('groups.json', 'w') as file:
         json.dump(data, file)
@@ -87,22 +94,14 @@ def save_json(data):
 
 def make_list_of_top_n_groups(groups, n):
     list_of_dicts = [{'title': x[1], 'id': x[0], 'count': groups.count(x)} for x in tqdm(set(groups))]
-    list_of_dicts = sorted(list_of_dicts, key=lambda x: x['count'], reverse=True)
+    list_of_dicts = sorted(list_of_dicts, key=lambda x: x['count'], reverse=False)
     return list_of_dicts[:n]
 
 
 target_id = input('Введите id пользователя: ')
-params = dict(access_token=ACCESS_TOKEN, v=VERSION, user_id=target_id)
-
-followers = get_users(params.copy(), 'users.getFollowers')
-followers.extend(get_users(params.copy(), 'friends.get'))
-
-list_of_groups = get_groups(followers, params.copy())
-
-list_of_groups = [(x.id, x.screen_name) for x in list_of_groups]
-
-list_of_groups = make_list_of_top_n_groups(list_of_groups, 10)
-save_json(list_of_groups)
+user = Celebrity(target_id)
+groups = user.get_top_n_subscribers_groups(10)
+save_json(groups)
 
 print('Success!')
 
