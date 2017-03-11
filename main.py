@@ -46,7 +46,6 @@ def get_via_execute(dict_params, method, number):
 
 class Celebrity:
 
-
     def __init__(self, id):
         self.id = id
 
