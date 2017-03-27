@@ -2,32 +2,31 @@ import requests
 import json
 from tqdm import tqdm
 
-TOKEN_URL = 'https://oauth.vk.com/blank.html#access_token=' \
-            '5794f313f436101f5eefdf8d152c8f0c62a7adb8e4b8a3dcb16040585d1ece4755a1d68e0061d914006a1' \
-            '&expires_in=0&user_id=289384'
-ACCESS_TOKEN = '5794f313f436101f5eefdf8d152c8f0c62a7adb8e4b8a3dcb16040585d1ece4755a1d68e0061d914006a1'
-VERSION = '5.52'
-
 
 class Celebrity:
 
+    __followers_method = 'https://api.vk.com/method/users.getFollowers'
+    __friends_method = 'https://api.vk.com/method/friends.get'
+    __groups_method = 'https://api.vk.com/method/groups.get'
+    __execute_method = 'https://api.vk.com/method/execute'
+    __access_token = ''
+    __version = '5.52'
+
     def __init__(self, id):
         self.id = id
-        self.followers_method = 'https://api.vk.com/method/users.getFollowers'
-        self.friends_method = 'https://api.vk.com/method/friends.get'
-        self.groups_method = 'https://api.vk.com/method/groups.get'
-        self.execute_method = 'https://api.vk.com/method/execute'
-        self.params = dict(access_token=ACCESS_TOKEN, v=VERSION, user_id=self.id)
+        self.params = dict(access_token=self.__access_token, v=self.__version, user_id=self.id)
 
     def save_top_n_subscribers_groups_in_json(self, n):
         subscribers = self.get_subscribers()
-        groups = self.get_groups(subscribers, self.params.copy())
+        groups = self.get_groups(subscribers, self.params)
         top_n_groups = self.make_list_of_top_n_groups(groups, n)
-        self.save_json(top_n_groups)
+        with open('groups.json', 'w') as file:
+            json.dump(top_n_groups, file)
+        print('Файл успешно сохранен')
 
     def get_subscribers(self):
-        followers = self.response(self.followers_method, self.params.copy())['items']
-        friends = self.response(self.friends_method, self.params.copy())['items']
+        followers = self.response(self.__followers_method, self.params)['items']
+        friends = self.response(self.__friends_method, self.params)['items']
         followers.extend(friends)
         return list(map(int, followers))
 
@@ -54,7 +53,7 @@ class Celebrity:
                       'return groups;'.format(i=number, open_bracket='{', method='groups.get',
                                               users=[*users_slice], v=params['v'], close_bracket='}')
             params['code'] = execute
-            groups = self.response(self.execute_method, params)
+            groups = self.response(self.__execute_method, params)
             for element in groups:
                 try:
                     elements_list = [(x['id'], x['screen_name']) for x in element]
@@ -68,11 +67,6 @@ class Celebrity:
                                                                                              desc='Обработка групп')]
         list_of_dicts = sorted(list_of_dicts, key=lambda x: x['count'], reverse=True)
         return list_of_dicts[:n]
-
-    def save_json(self, data):
-        with open('groups.json', 'w') as file:
-            json.dump(data, file)
-        print('Файл успешно сохранен')
 
 
 target_id = input('Введите id пользователя: ')
